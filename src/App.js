@@ -82,10 +82,10 @@ function App() {
             setTimeRange({ start: 0, end: duration });
     
             const region = wsRegions.addRegion({
-                start: 0,
+                start: 0.1,
                 end: duration,
                 content: "Selected Region",
-                color: "rgba(255, 0, 0, 0.1)",
+                color: "rgba(0, 0, 0, 0.25)",
                 drag: true,
                 resize: true,
                 minLength: 0.1,
@@ -143,8 +143,14 @@ function App() {
     };
 
     const openEditModal = (word) => {
-        setCurrentWord(word);
-    };
+      // Clear any existing selection first
+      setCurrentWord(null);
+      // Set new selection after brief delay to ensure DOM update
+      setTimeout(() => {
+          setCurrentWord(word);
+          setShowQCWord(word.qc_word);
+      }, 10);
+  };
 
     const handleEditSubmit = (e) => {
         e.preventDefault();
@@ -156,6 +162,7 @@ function App() {
             start_time: Math.round(parseFloat(formData.get("start")) * 1000),
             end_time: Math.round(parseFloat(formData.get("end")) * 1000),
             edited: true,
+           
         };
 
         const index = transcription.words.findIndex((w) => w === currentWord);
@@ -283,9 +290,13 @@ function App() {
                             <div className="words-list">
                                 {transcription.words.map((word, index) => (
                                     <div
-                                        key={index}
-                                        className={`word-item ${editableWords.includes(word) ? "editable" : ""}`}
-                                    >
+                                    key={index}
+                                    className={`word-item 
+                                        ${editableWords.includes(word) ? "editable" : ""}
+                                        ${currentWord?.word === word.word ? "selected" : ""}
+                                        ${word.qc ? "qc-pass" : "qc-fail"}`
+                                    }
+                                >
                                         <div className="word-text">
                                             <div className="word-content">
                                                 {word.word}
@@ -299,7 +310,7 @@ function App() {
                                                 </span>
                                                 <span 
                                                     className={`qc-status ${word.qc ? 'pass' : 'fail'}`}
-                                                    onClick={() => setShowQCWord(word.qc_word)}
+                                                    /*onClick={() => setShowQCWord(word.qc_word)}*/
                                                 >
                                                     {word.qc ? "✔ Correct" : "✗ Incorrect"}
                                                 </span>
@@ -373,19 +384,24 @@ function App() {
                             </div>
 
                             {/* QC Panel */}
-                            <div className="static-panel qc-panel">
-                                <h3>Quality Check Result</h3>
-                                {showQCWord ? (
-                                    <>
-                                        <p>{showQCWord}</p>
-                                        <button onClick={() => setShowQCWord(null)} className="cancel-button">
-                                            Close
-                                        </button>
-                                    </>
-                                ) : (
-                                    <p className="placeholder-text"> No QC feedback available (Note: Click any word's ✔ Correct or ✗ Incorrect status to view its validation details) </p>
-                                )}
-                            </div>
+                          <div className="static-panel qc-panel">
+                              <h3>Quality Check Result</h3>
+                              {currentWord ? (
+                                  <>
+                                      <p>{currentWord.qc_word || "No QC feedback available for this word"}</p>
+                                      <button 
+                                          onClick={() => setCurrentWord(null)} 
+                                          className="cancel-button"
+                                      >
+                                          Close
+                                      </button>
+                                  </>
+                              ) : (
+                                  <p className="placeholder-text">
+                                      Select a word to view quality check results
+                                  </p>
+                              )}
+                          </div>
                         </div>
                     </div>
                 )}

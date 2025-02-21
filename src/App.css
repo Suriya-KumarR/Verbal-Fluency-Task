@@ -206,7 +206,7 @@ button {
 }
 
 .word-item.editable {
-  border-left: 3px solid var(--primary-color);
+  border-left: none; /* Remove previous left border */
 }
 
 .word-text {
@@ -365,3 +365,72 @@ button {
   margin-bottom: 0;
   /* keep existing styles */
 }
+
+
+/* Add these CSS styles */
+.word-item.selected {
+  background-color: #f0f4f8 !important;
+  border-left: 3px solid var(--primary-color);
+  position: relative;
+}
+
+.word-item.selected::after {
+  content: "Currently Editing";
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  background: rgba(57, 134, 168, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.word-item.selected .edit-button {
+  visibility: hidden;
+}
+
+/* Prevent hover effect on selected item */
+.word-item.selected:hover {
+  background-color: #f0f4f8 !important;
+}
+
+/* Add transition for smooth highlight */
+/* Remove all other borders */
+.word-item {
+  border: none !important;
+  border-radius: 0;
+}
+
+.qc-pass {
+  background-color: #e8f5e9;
+  border-left: 4px solid #2e7d32;  /* Green left border */
+  border: none; /* Remove other borders */
+}
+
+.qc-fail {
+  background-color: #ffebee;
+  border-left: 4px solid #c62828;  /* Red left border */
+  border: none; /* Remove other borders */
+}
+/* Hover states */
+.qc-pass:hover {
+  border-left-color: #1b5e20; /* Darker green on hover */
+}
+
+.qc-fail:hover {
+  border-left-color: #b71c1c; /* Darker red on hover */
+}
+
+/* Selected state overlay */
+/* Selection state */
+.word-item.selected {
+  box-shadow: 0 0 0 2px var(--primary-color);
+  background-color: rgba(240, 240, 240, 0.7) !important;
+}
+
+/* QC status text */
+.pass { color: #2e7d32; }
+.fail { color: #c62828; }
